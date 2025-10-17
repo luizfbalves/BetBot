@@ -1,52 +1,70 @@
 header {
-    background-color: #126e51;
-    width: 100vw;
-    position: fixed;
-    height: 50px;
-    z-index: 20;
+  background-color: #126e51;
+  width: 100vw;
+  position: fixed;
+  height: 50px;
+  z-index: 20;
 }
 
 header nav {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-around;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-around;
 
-    width: 100%;
+  width: 100%;
 }
 
 header nav img {
-    padding: 1em;
-    cursor: pointer;
+  padding: 1em;
+  cursor: pointer;
 }
 
-header nav button, header nav a {
-    cursor: pointer;
-    font-size: 14px;
+header nav button,
+header nav a {
+  cursor: pointer;
+  font-size: 14px;
 
-    color: #e4e4e4;
-    background-color: #126e51;
-    text-decoration: none;
-    border: none;
+  color: #e4e4e4;
+  background-color: #126e51;
+  text-decoration: none;
+  border: none;
 }
 
-header nav button:hover, header nav a:hover {
-    color: #26ffbe;
+header nav button:hover,
+header nav a:hover {
+  color: #26ffbe;
 }
 
 header nav .login {
-    display: none;
+  display: none;
 }
 
 header nav div.login {
-    flex-direction: column;
-    align-items: center;
-    color: #fff;
-    font-size: 11px;
-    cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 header nav div.login img {
-    padding: 0;
-    width: 22px;
-    height: 22px;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+}
+
+/* Blue button style for register */
+header nav button.blue-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+header nav button.blue-btn:hover {
+  background-color: #1976d2;
 }

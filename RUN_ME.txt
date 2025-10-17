@@ -1,0 +1,57 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║        🎯 BetBot - Automatizador de Apostas Bet365          ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+
+⚡ FORMA MAIS RÁPIDA - 3 LINHAS:
+
+  Linux/macOS:
+    bash setup.sh
+    bash start.sh
+
+  Windows:
+    setup.bat
+    start.bat
+
+  Qualquer SO:
+    python3 setup.py
+
+
+📋 PRÉ-REQUISITOS (30 segundos):
+
+  1. Python 3.9+ instalado
+  2. Conta MongoDB Atlas (grátis em mongodb.com/cloud/atlas)
+  3. Conta Bet365
+  4. Chrome ou Firefox
+
+
+🚀 PROCESSO:
+
+  1. Execute o setup.sh/setup.bat/setup.py
+  2. Cole sua connection string do MongoDB
+  3. (Opcional) Registre seu usuário Bet365
+  4. Execute start.sh/start.bat
+  5. Login na interface web
+  6. Configure e clique "Start"
+
+
+📚 DOCUMENTAÇÃO:
+
+  HOW_TO_RUN.md           ← Instruções resumidas
+  QUICKSTART.md           ← Guia detalhado
+  README.md               ← Documentação completa
+  .github/copilot-instructions.md ← Info técnica
+
+
+❓ DÚVIDAS?
+
+  Veja QUICKSTART.md ou HOW_TO_RUN.md
+
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  Pronto? Comece agora com:  bash setup.sh && bash start.sh  ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝

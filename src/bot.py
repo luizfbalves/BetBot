@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from src.widgets import *
 
 class BetBot:
-    def __init__(self, config: dict, Updater: object):
+    def __init__(self, config: dict):
         self.config = config
         self.browser = ChromeBrowser()
         self.fast = WebDriverWait(self.browser, 5)
@@ -19,7 +19,6 @@ class BetBot:
         
         try: self.pegar_banca()
         except: self.pegar_banca()
-        # Updater.update_balance(self.banca_inicial)
 
         self.saldo = 0
         self.minOdd = self.config["filters"]["minOdd"]

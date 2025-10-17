@@ -3,16 +3,11 @@ from pymongo.collection import Collection
 from pymongo import MongoClient
 from env import autenticacao # autenticacao = "mongodb+srv://..."
 import time, hashlib
+from typing import Union, Dict, Any
 
 users_schema = {
     "username": "",
     "password": "",
-    "license": {
-        "from_date": 0,
-        "to_date": 0,
-        "original_value": -1, 
-        "actual_value": 0.0
-    },
     "settings": {
         "stopWin": 0,
         "stopLoss": 0,
@@ -41,28 +36,14 @@ class Mongo:
         user = users_schema
         user['username'] = username
         user['password'] = criptografa(password)
-        user['license']['from_date'] = time.time()
-        user['license']['to_date'] = time.time() + 2592000
         user["_id"] = time.time()
         self.Users_collection.insert_one(user)
-
-    def renovar_licenca(self, username:str):
-        '''
-        Aumenta a licença de determinado usuário
-        '''
-        data = time.time() + 2592000
-        self.Users_collection.find_one_and_update(
-            {'username':username}, {'$set': {
-                'license.to_date': data,
-        }})
 
     def modifica_usuario(self, info: dict, username:str):
         '''
         Modifica as informações do usuário de determinado usuário
         '''
         user = self.remover_usuario(username)
-        info['license']['from_date'] = user['license']['from_date']
-        info['license']['to_date'] = user['license']['to_date']
         user.update(info)
         self.Users_collection.insert_one(user)
 
@@ -74,7 +55,7 @@ class Mongo:
         return self.Users_collection.find_one_and_delete(
             {'username': username})
 
-    def login(self, username:str, password:str) -> bool:
+    def login(self, username:str, password:str) -> Union[Dict[str, Any], bool]:
         '''
         Devolve as informações do usuário a partir do nome do usuário
         '''
@@ -86,10 +67,6 @@ class Mongo:
     def modificar_banco_users(self, opcao:str):
         if opcao == "clear":
             self.Users_collection.delete_many({})
-        elif opcao == "time":
-            data = time.time() + 2592000
-            self.Users_collection.update_many(
-                {}, {'$set': {'license.to_date': data}})
 
 client =  MongoClient(autenticacao)
 Database = client.betbot 

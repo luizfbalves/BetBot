@@ -2,23 +2,22 @@ from selenium.webdriver import FirefoxProfile, Firefox, DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-import undetected_chromedriver.v2 as Browser_uc
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
-from typing import Tuple, List
+from typing import Tuple, List, Union, cast
 import time, re
 
 # Classes
 class FirefoxBrowser(Firefox):
     def __init__(self):
-        profile = FirefoxProfile()
-        profile.set_preference("dom.webdriver.enabled", False)
-        profile.set_preference('useAutomationExtension', False)
-        profile.update_preferences()
-        desired = DesiredCapabilities.FIREFOX
+        from selenium.webdriver.firefox.options import Options
+        options = Options()
+        options.set_preference("dom.webdriver.enabled", False)
+        options.set_preference('useAutomationExtension', False)
 
-        super().__init__(firefox_profile=profile, desired_capabilities=desired)
+        super().__init__(options=options)
 
-ChromeBrowser = Browser_uc.Chrome
+ChromeBrowser = uc.Chrome
 
 # Abstrações
 def rolar_pagina(browser: Firefox, valor: int):
@@ -87,7 +86,7 @@ def abrir_opcoes(wait: WebDriverWait):
                 break
 
 def selecionar_info_tabela(opcao: WebElement, info: str, medida: str, 
-    minOdd: float, search:str) -> WebElement or bool:
+    minOdd: float, search:str) -> Union[WebElement, bool]:
     rowName = (".srb-ParticipantLabelCentered " if search == "table1" 
         else ".srb-ParticipantLabel_Name ")
     row = -1
@@ -100,7 +99,7 @@ def selecionar_info_tabela(opcao: WebElement, info: str, medida: str,
     if row == -1: return False
 
     column = 0
-    info = re.escape(info).replace("X", "\d").lower()
+    info = re.escape(info).replace("X", r"\d").lower()
     for index, coluna in enumerate(
         encontra_filhos(opcao, '.gl-MarketColumnHeader ')):
         coluna = coluna.text.lower()
@@ -122,7 +121,7 @@ def selecionar_info_tabela(opcao: WebElement, info: str, medida: str,
     return False
 
 def selecionar_info_tabela2(opcao: WebElement, info: str, medida: str, 
-    minOdd: float) -> WebElement or bool:
+    minOdd: float) -> Union[WebElement, bool]:
     column = 0
     for index, coluna in enumerate(
         encontra_filhos(opcao, '.gl-MarketColumnHeader ')):
@@ -145,8 +144,11 @@ def selecionar_info_tabela2(opcao: WebElement, info: str, medida: str,
     return False
 
 def seleciona_info_botoes(
-    opcao: WebElement, info: str, minOdd: float) -> WebElement or bool:
-    info = re.escape(info).replace("X", "\d").lower()
+    opcao: WebElement, info: Union[str, list], minOdd: float) -> Union[WebElement, bool]:
+    if isinstance(info, list):
+        info = info[0]
+    info = cast(str, info)
+    info = re.escape(info).replace("X", r"\d").lower()
     for coluna in encontra_filhos(opcao, ".gl-Participant_General "):
         informacao, odd = coluna.text.split("\n")
         if re.match(info, informacao.lower()):
@@ -156,7 +158,7 @@ def seleciona_info_botoes(
                 break
     return False
 
-def procura_aposta(opcao: WebElement, info: str or list, 
+def procura_aposta(opcao: WebElement, info: Union[str, list], 
     minOdd: float, search: str) -> bool:
     if search != "options":
         coluna, medida = info
@@ -169,13 +171,13 @@ def procura_aposta(opcao: WebElement, info: str or list,
     else:
         botao = seleciona_info_botoes(opcao, info, minOdd)
     
-    if botao: 
-        botao.click()
+    if botao is not False:
+        cast(WebElement, botao).click()
         return True
     return False
 
-def procura_opcao(wait: WebDriverWait, nome: str) -> WebElement or bool:
-    nome = re.escape(nome).replace("X", "\d").lower() + "$"
+def procura_opcao(wait: WebDriverWait, nome: str) -> Union[WebElement, bool]:
+    nome = re.escape(nome).replace("X", r"\d").lower() + "$"
     opcoes = encontra_elementos(wait, '.sip-MarketGroup ')
     for opcao in opcoes:
         try:
@@ -212,7 +214,7 @@ def adicionar_valor(
 def atribuir_valor_multi(wait: WebDriverWait, title:str, valor: float) -> bool:
     jogadas = encontra_elementos(wait, 
         ".bss-NormalBetItem_ContentWrapper ")
-    title = re.escape(title).replace("X", "\d").lower().replace("°", "º")
+    title = re.escape(title).replace("X", r"\d").lower().replace("°", "º")
     for jogada in reversed(jogadas):
         print(title, jogada.text.lower().strip())
         if re.search(title, jogada.text.lower().strip()):
@@ -224,7 +226,7 @@ def atribuir_valor_multi(wait: WebDriverWait, title:str, valor: float) -> bool:
 
 def atribuir_valor_single(wait: WebDriverWait, title:str, valor: float) -> bool:    
     try:
-        title = re.escape(title).replace("X", "\d").lower().replace("°", "º")
+        title = re.escape(title).replace("X", r"\d").lower().replace("°", "º")
         text_jogada = encontra_elementos(wait, ".qbs-NormalBetItem_Details")[0].text
         if re.search(title, text_jogada.lower().strip()):
             preencher_campo(wait,".qbs-StakeBox_StakeInput ", str(valor))
@@ -241,16 +243,16 @@ def abrir_escanteios(wait: WebDriverWait) -> bool:
             return True
     return False
 
-def banca(wait: WebElement) -> float:
+def banca(wait: WebDriverWait) -> float:
     texto_banca = encontra_elementos(
         wait, ".hm-Balance ")[0].text
     print("Banca:", texto_banca)
     return float(texto_banca.strip("R$").replace(",", "."))
 
-def nome_times(wait: WebDriverWait) -> Tuple[str]:
-    return encontra_elementos(
+def nome_times(wait: WebDriverWait) -> Tuple[str, ...]:
+    return tuple(encontra_elementos(
         wait, ".ipe-EventHeader_Fixture"
-    )[0].text.split(" v ")
+    )[0].text.split(" v "))
 
 def numero_gols(jogo: WebElement) -> List[int]:
     lista_gols = encontra_filhos(jogo,
@@ -281,7 +283,7 @@ def preencher_campo(wait: WebDriverWait, selector: str, valor: str):
     ).send_keys(valor)
 
 def encontra_filhos(element: WebElement, selector: str) -> List[WebElement]:
-    return element.find_elements_by_css_selector(selector)
+    return element.find_elements(By.CSS_SELECTOR, selector)
 
 def encontra_elementos(wait: WebDriverWait, selector: str) -> List[WebElement]:
     return wait.until(
